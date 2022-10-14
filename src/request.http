@@ -1,0 +1,26 @@
+@baseUrl = http://0.0.0.0:8001
+
+### 2.2 guardado de archivo .docs a partir de base64
+POST {{baseUrl}}/write/base64
+content-type: application/json
+accept: application/json
+
+{
+  "appName": "string",
+  "nas": "string",
+  "path": "string",
+  "fileName": 0,
+  "age": 100,
+  "base64": "string",
+  "withDateSubFolder": true
+}
+
+### 2.2 guardado de archivo .docs a partir de base64
+POST {{baseUrl}}/valid/hello
+content-type: application/json
+accept: application/json
+
+{
+  "name": "",
+  "age": 101
+}

@@ -12,3 +12,6 @@ okapi = { version = "0.7.0-rc.1" }
 rocket_okapi = { version = "0.8.0-rc.2", features = ["swagger"] }
 
 serde = "1.0"
+chrono = "0.4"
+rocket-validation = "0.1.3"
+validator="0.16.0"
