@@ -15,6 +15,11 @@ use schemars::JsonSchema;
 // use validator::{Validate, ValidationError};
 use rocket_validation::{Validate, Validated};
 
+mod utils;
+use utils::HelpPrint::print_type_of;
+mod service;
+use service::MsFileService::saveBase64;
+
 // ======Root service=====
 #[derive(Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
@@ -41,15 +46,13 @@ fn index() -> Option<Json<ResponseI>> {
 // ========service for save files=============
 // #[derive(Serialize, Deserialize, JsonSchema)]
 #[derive(Debug, Deserialize, Serialize, Validate, JsonSchema)]
-#[serde(crate = "rocket::serde")]
-struct InputData {
+#[serde(crate = "rocket::serde", rename_all = "camelCase")]
+pub struct InputData {
     #[validate(length(min = 1))]
     appName: String,
     nas: String,
     path: String,
-    fileName: u16,
-    #[validate(range(min = 0, max = 10))]
-    age: u8,
+    fileName: String,
     base64: String,
     withDateSubFolder: bool,
 }
@@ -58,6 +61,8 @@ struct InputData {
 #[post("/write/base64", data = "<input>")]
 fn write_base64(input: Json<InputData>) -> Option<Json<ResponseI>> {
     let year = chrono::Utc::now().year();
+    // print_type_of(&input);
+    saveBase64(input);
 
     Some(Json(ResponseI {
         error: false,
@@ -81,9 +86,10 @@ pub struct HelloData {
 }
 
 #[post("/hello", format = "application/json", data = "<data>")]
-fn validated_hello(
+async fn validated_hello(
     data: /* Uses the `Validated` type */ Validated<Json<HelloData>>,
 ) -> Json<HelloData> {
+    print_type_of(&data);
     Json(data.0 .0)
 }
 
@@ -102,7 +108,7 @@ fn rocket() -> _ {
     rocket::build()
         .mount("/", openapi_get_routes![index, write_base64])
         .mount("/api", make_swagger_ui(&get_docs()))
-        .mount("/", routes![validated_hello])
+        .mount("/valid", routes![validated_hello])
         .register("/", catchers![rocket_validation::validation_catcher])
 }
 
